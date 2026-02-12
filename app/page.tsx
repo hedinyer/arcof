@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Header />
-      <main className="pt-24 px-6 md:px-12 pb-20 max-w-[1920px] mx-auto">
+      <main className="pt-24 px-6 md:px-12 pb-4 max-w-[1920px] mx-auto">
         <Hero />
         <FeaturesGrid />
         <DataSection />

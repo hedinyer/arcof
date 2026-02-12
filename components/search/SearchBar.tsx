@@ -37,9 +37,9 @@ export function SearchBar() {
             <img
               src={f.image}
               alt=""
-              className="h-14 w-14 object-contain shrink-0"
-              width={56}
-              height={56}
+              className="h-20 w-20 object-contain shrink-0"
+              width={80}
+              height={80}
             />
             <span className="text-base font-bold">{f.label}</span>
           </button>

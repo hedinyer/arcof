@@ -39,11 +39,28 @@ export function ListingFilterProvider({ children }: { children: ReactNode }) {
   );
 }
 
+export type PropertyType =
+  | "Apartamento"
+  | "Casas"
+  | "Consultorios"
+  | "Oficinas"
+  | "Locales"
+  | "Bodegas"
+  | "Lotes"
+  | "Fincas"
+  | "Parqueaderos"
+  | "Edificios"
+  | "Apartaestudio"
+  | "Hotel"
+  | "Habitacion";
+
 type SearchBarFormContextValue = {
   location: string;
   setLocation: (v: string) => void;
   rooms: string;
   setRooms: (v: string) => void;
+  propertyType: PropertyType | "";
+  setPropertyType: (v: PropertyType | "") => void;
 };
 
 const SearchBarFormContext = createContext<SearchBarFormContextValue | null>(
@@ -59,9 +76,10 @@ export function useSearchBarForm() {
 export function SearchBarFormProvider({ children }: { children: ReactNode }) {
   const [location, setLocation] = useState("");
   const [rooms, setRooms] = useState("");
+  const [propertyType, setPropertyType] = useState<PropertyType | "">("");
   return (
     <SearchBarFormContext.Provider
-      value={{ location, setLocation, rooms, setRooms }}
+      value={{ location, setLocation, rooms, setRooms, propertyType, setPropertyType }}
     >
       {children}
     </SearchBarFormContext.Provider>
