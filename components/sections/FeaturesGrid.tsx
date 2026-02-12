@@ -123,13 +123,7 @@ function PropertyCard({ property }: { property: Property }) {
         : null;
 
   return (
-    <motion.article
-      className="group cursor-pointer"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
-    >
+    <article className="group cursor-pointer">
       <div className="relative aspect-[16/10] rounded-md overflow-hidden bg-[var(--background-elevated)] mb-1.5 border border-white/5">
         {listingLabel && (
           <span className="absolute top-2 left-2 z-10 px-2.5 py-1 rounded text-xs font-semibold bg-[var(--accent)] text-white shadow-sm">
@@ -216,7 +210,7 @@ function PropertyCard({ property }: { property: Property }) {
           </span>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
@@ -224,15 +218,9 @@ export function FeaturesGrid() {
   return (
     <section className="mb-10">
       {/* Bucaramanga */}
-      <motion.h2
-        className="text-xl font-display font-bold mb-4 text-[var(--text-primary)]"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
+      <h2 className="text-xl font-display font-bold mb-4 text-[var(--text-primary)]">
         Propiedades populares en Bucaramanga
-      </motion.h2>
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {PROPERTIES_BUCARAMANGA.map((p) => (
           <PropertyCard key={p.id} property={p} />
@@ -240,17 +228,11 @@ export function FeaturesGrid() {
       </div>
 
       {/* Giron */}
-      <motion.div
-        className="mb-4"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="mb-4">
         <h2 className="text-xl font-display font-bold text-[var(--text-primary)]">
           Propiedades populares en Giron
         </h2>
-      </motion.div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {PROPERTIES_GIRON.map((p) => (
           <PropertyCard key={p.id} property={p} />

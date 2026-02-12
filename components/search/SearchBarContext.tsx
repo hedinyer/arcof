@@ -5,7 +5,7 @@ import {
   useContext,
   useState,
   useCallback,
-  useEffect,
+  useLayoutEffect,
   type ReactNode,
 } from "react";
 
@@ -105,7 +105,7 @@ export function useSearchBarScroll() {
 export function SearchBarScrollProvider({ children }: { children: ReactNode }) {
   const [showInHeader, setShowInHeader] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function onScroll() {
       const el = document.querySelector("[data-search-bar]");
       if (!el) return;

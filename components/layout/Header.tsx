@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchBarScroll } from "@/components/search/SearchBarContext";
 import { SearchBarPill } from "@/components/search/SearchBarPill";
@@ -39,20 +38,11 @@ export function Header() {
         />
       </div>
 
-      <AnimatePresence>
-        {showInHeader && (
-          <motion.div
-            key="header-search"
-            className="flex-1 flex justify-center min-w-0 max-w-none mx-auto px-4"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-          >
-            <SearchBarPill compact />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showInHeader && (
+        <div className="flex-1 flex justify-center min-w-0 max-w-none mx-auto px-4">
+          <SearchBarPill compact />
+        </div>
+      )}
 
       <div className="flex items-center gap-4 shrink-0">
         <DropdownMenu>

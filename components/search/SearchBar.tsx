@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { ListingFilterId } from "./SearchBarContext";
 import { useListingFilter, useSearchBarScroll } from "./SearchBarContext";
 import { SearchBarPill } from "./SearchBarPill";
@@ -17,12 +16,7 @@ export function SearchBar() {
 
   return (
     <div className="flex flex-col items-center justify-center mt-8 mb-8 pointer-events-none">
-      <motion.div
-        className="pointer-events-auto flex items-center gap-8 mb-6 bg-transparent px-8 py-3 rounded-full"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
+      <div className="pointer-events-auto flex items-center gap-8 mb-6 bg-transparent px-8 py-3 rounded-full">
         {filters.map((f) => (
           <button
             key={f.id}
@@ -44,17 +38,13 @@ export function SearchBar() {
             <span className="text-base font-bold">{f.label}</span>
           </button>
         ))}
-      </motion.div>
+      </div>
 
       <div className="w-full" data-search-bar>
         {!showInHeader ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
+          <div>
             <SearchBarPill />
-          </motion.div>
+          </div>
         ) : (
           <div className="h-[62px]" aria-hidden />
         )}
