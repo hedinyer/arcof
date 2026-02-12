@@ -8,7 +8,7 @@ import { SearchBarPill } from "./SearchBarPill";
 const filters: { id: ListingFilterId; image: string; label: string }[] = [
   { id: "rentar", image: "/rentar.png", label: "Rentar" },
   { id: "comprar", image: "/comprar.png", label: "Comprar" },
-  { id: "vender", image: "/vender.png", label: "Vender" },
+  { id: "vender", image: "/vender.png", label: "Pagar" },
 ];
 
 export function SearchBar() {
@@ -37,9 +37,9 @@ export function SearchBar() {
             <img
               src={f.image}
               alt=""
-              className="h-20 w-20 object-contain shrink-0"
-              width={80}
-              height={80}
+              className={`object-contain shrink-0 ${f.id === "vender" ? "h-32 w-32" : "h-20 w-20"}`}
+              width={f.id === "vender" ? 128 : 80}
+              height={f.id === "vender" ? 128 : 80}
             />
             <span className="text-base font-bold">{f.label}</span>
           </button>

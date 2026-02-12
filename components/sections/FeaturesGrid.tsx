@@ -241,7 +241,7 @@ export function FeaturesGrid() {
 
       {/* Giron */}
       <motion.div
-        className="flex items-center justify-between mb-4"
+        className="mb-4"
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -250,13 +250,6 @@ export function FeaturesGrid() {
         <h2 className="text-xl font-display font-bold text-[var(--text-primary)]">
           Propiedades populares en Giron
         </h2>
-        <button
-          type="button"
-          className="flex items-center gap-1 text-[var(--accent)] font-medium hover:underline"
-        >
-          Ver más
-          <span className="material-symbols-outlined text-lg">arrow_forward</span>
-        </button>
       </motion.div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {PROPERTIES_GIRON.map((p) => (
