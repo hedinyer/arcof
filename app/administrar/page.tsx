@@ -85,8 +85,8 @@ function AdministrarContent() {
           descripcion: f.descripcion ?? "",
         }));
         const ingresosTotales = facturas
-          .filter((f) => f.estado === "pagado")
-          .reduce((sum, f) => sum + f.monto, 0);
+          .filter((f: Factura) => f.estado === "pagado")
+          .reduce((sum: number, f: Factura) => sum + f.monto, 0);
         return {
           id: inm.id,
           titulo: inm.titulo ?? inm.descripcion?.slice(0, 80) ?? "Sin título",
