@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -249,7 +249,7 @@ function propertyTypeToTipoInmueble(propertyType: PropertyType | ""): string | n
   return PROPERTY_TYPE_TO_DB[propertyType] ?? null;
 }
 
-export default function PropiedadesPage() {
+function PropiedadesContent() {
   const searchParams = useSearchParams();
   const tipo = searchParams.get("tipo");
   const tipoOferta = getTipoOfertaFromSearch(tipo);
@@ -398,5 +398,27 @@ export default function PropiedadesPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function PropiedadesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background">
+        <Hero variant="propiedades" />
+        <main className="pt-12 pb-12 px-4 md:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="aspect-[16/10] rounded-md bg-[var(--background-elevated)] animate-pulse" />
+              ))}
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <PropiedadesContent />
+    </Suspense>
   );
 }
