@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Syne, Outfit } from "next/font/google";
+import { Syne, Outfit, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import {
   ListingFilterProvider,
   SearchBarFormProvider,
@@ -18,6 +19,13 @@ const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -39,15 +47,17 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${syne.variable} ${outfit.variable} font-sans antialiased`}
+        className={`${syne.variable} ${outfit.variable} ${instrumentSerif.variable} font-sans antialiased`}
       >
         <ReduxProvider>
-        <SearchBarFormProvider>
-          <ListingFilterProvider>
-            <SearchBarScrollProvider>{children}</SearchBarScrollProvider>
-          </ListingFilterProvider>
-        </SearchBarFormProvider>
-      </ReduxProvider>
+          <AuthProvider>
+            <SearchBarFormProvider>
+              <ListingFilterProvider>
+                <SearchBarScrollProvider>{children}</SearchBarScrollProvider>
+              </ListingFilterProvider>
+            </SearchBarFormProvider>
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

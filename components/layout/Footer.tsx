@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="bg-[var(--background)] text-[var(--text-primary)] pt-16 pb-8">
       <div className="max-w-[1920px] mx-auto sm:px-12 mt-0 mb-16 px-6">
-        <div className="relative overflow-hidden rounded-[40px] border border-white/10 bg-[#722F37] text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)] p-6 sm:p-8">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-[40px] border border-white/10 bg-[#722F37] text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)] p-5 sm:p-6 md:p-8">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_20%_-20%,rgba(255,255,255,0.06),transparent_60%)]"></div>
             <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_80%_120%,rgba(255,255,255,0.05),transparent_60%)]"></div>
@@ -14,12 +14,12 @@ export function Footer() {
           </div>
 
           <div className="relative">
-            <h2 className="text-[16vw] sm:text-[12vw] lg:text-[9vw] leading-[0.9] font-semibold tracking-tighter">
+            <h2 className="text-[11vw] leading-[1.05] font-semibold tracking-tighter sm:text-[12vw] sm:leading-[0.9] lg:text-[9vw]">
               <span className="block">¿Listo para encontrar</span>
               <span className="block text-white/60">tu propiedad ideal?</span>
             </h2>
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Contacto Principal */}
               <div>
                 <p className="text-sm text-white/60">Contacto</p>

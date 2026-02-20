@@ -3,104 +3,103 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useListingFilter } from "@/components/search/SearchBarContext";
+import { supabase } from "@/lib/supabase";
 
-const IMG_1 =
+const PLACEHOLDER_IMG =
   "https://a0.muscache.com/im/pictures/hosting/Hosting-1417554233548575671/original/a08c902a-28cc-4d19-b994-4e4fe7c602e8.jpeg?im_w=960";
-const IMG_2 =
-  "https://a0.muscache.com/im/pictures/hosting/Hosting-1504475856624208493/original/1ccbb4df-43f8-4f28-887a-3ea56a038f03.jpeg?im_w=960";
+
+/** DB row from public.inmuebles */
+type InmuebleRow = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  direccion: string | null;
+  ciudad: string;
+  lat: number | null;
+  lng: number | null;
+  tipo_oferta: "venta" | "arriendo";
+  tipo_inmueble: string;
+  area_construida: number | null;
+  area_privada: number | null;
+  descripcion: string;
+  video_url: string | null;
+  fotos: { url: string; orden?: number }[] | string[];
+  telefono: string | null;
+  user_id: string | null;
+  estado: string;
+  habitaciones: number | null;
+  banos: number | null;
+  parqueaderos: number | null;
+  precio: number | null;
+  estrato: number | null;
+  piso: number | null;
+};
 
 type Property = {
   id: string;
   title: string;
   price: string;
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms?: number;
+  bathrooms?: number;
   area: string;
   images: string[];
+  tipo_oferta: "venta" | "arriendo";
 };
 
-const PROPERTIES_BUCARAMANGA: Property[] = [
-  {
-    id: "b1",
-    title: "Apartamento en Bucaramanga",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "b2",
-    title: "Apartamento en Bucaramanga",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "b3",
-    title: "Apartamento en Bucaramanga",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "b4",
-    title: "Apartamento en Bucaramanga",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-];
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
 
-const PROPERTIES_GIRON: Property[] = [
-  {
-    id: "g1",
-    title: "Apartamento en Giron",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "g2",
-    title: "Apartamento en Giron",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "g3",
-    title: "Apartamento en Giron",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-  {
-    id: "g4",
-    title: "Apartamento en Giron",
-    price: "$3'500.000",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: "52 m²",
-    images: [IMG_1, IMG_2],
-  },
-];
+/** Resolve photo URL: if it's a storage path (no protocol), return public URL from bucket images */
+function resolvePhotoUrl(urlOrPath: string): string {
+  if (!urlOrPath) return "";
+  if (/^https?:\/\//i.test(urlOrPath)) return urlOrPath;
+  const path = urlOrPath.startsWith("casas/") ? urlOrPath : `casas/${urlOrPath}`;
+  const { data } = supabase.storage.from("images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+function formatPrecio(precio: number | null): string {
+  if (precio == null || precio <= 0) return "Consultar";
+  if (precio >= 1_000_000) return `$${(precio / 1_000_000).toFixed(1)} M`;
+  if (precio >= 1_000) return `$${(precio / 1_000).toFixed(0)} K`;
+  return `$${precio.toLocaleString("es-CO")}`;
+}
+
+function inmuebleToProperty(row: InmuebleRow): Property {
+  const rawFotos = Array.isArray(row.fotos) ? row.fotos : [];
+  const sorted = [...rawFotos].sort((a, b) => {
+    const oA = typeof a === "object" && a && "orden" in a ? (a as { orden?: number }).orden ?? 0 : 0;
+    const oB = typeof b === "object" && b && "orden" in b ? (b as { orden?: number }).orden ?? 0 : 0;
+    return oA - oB;
+  });
+  const images = sorted
+    .map((f) => (typeof f === "string" ? f : (f as { url: string }).url))
+    .filter(Boolean)
+    .map(resolvePhotoUrl);
+  const areaM2 = row.area_construida ?? row.area_privada;
+  const descExcerpt = row.descripcion?.trim()
+    ? (row.descripcion.includes(",")
+        ? row.descripcion.split(",")[0].trim()
+        : row.descripcion.trim())
+    : "";
+  const title = descExcerpt || `${capitalize(row.tipo_inmueble)} en ${capitalize(row.ciudad)}`;
+  return {
+    id: row.id,
+    title,
+    price: formatPrecio(row.precio),
+    bedrooms: row.habitaciones ?? undefined,
+    bathrooms: row.banos ?? undefined,
+    area: areaM2 != null ? `${Number(areaM2)} m²` : "—",
+    images,
+    tipo_oferta: row.tipo_oferta,
+  };
+}
 
 function PropertyCard({ property }: { property: Property }) {
   const { activeFilter } = useListingFilter();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = property.images.length ? property.images : [IMG_1];
+  const images = property.images.length ? property.images : [PLACEHOLDER_IMG];
 
   const goTo = useCallback(
     (index: number) => {
@@ -116,9 +115,9 @@ function PropertyCard({ property }: { property: Property }) {
   }, [currentIndex, images.length, goTo]);
 
   const listingLabel =
-    activeFilter === "rentar"
+    property.tipo_oferta === "arriendo"
       ? "En Renta"
-      : activeFilter === "comprar" || activeFilter === "vender"
+      : property.tipo_oferta === "venta"
         ? "En Venta"
         : null;
 
@@ -196,14 +195,18 @@ function PropertyCard({ property }: { property: Property }) {
           {property.price}
         </p>
         <div className="flex flex-wrap gap-2 text-xs text-[var(--text-secondary)]">
-          <span className="flex items-center gap-0.5">
-            <span className="material-symbols-outlined text-base">bed</span>
-            {property.bedrooms} Habs.
-          </span>
-          <span className="flex items-center gap-0.5">
-            <span className="material-symbols-outlined text-base">bathtub</span>
-            {property.bathrooms} Baño{property.bathrooms > 1 ? "s" : ""}
-          </span>
+          {property.bedrooms != null && (
+            <span className="flex items-center gap-0.5">
+              <span className="material-symbols-outlined text-base">bed</span>
+              {property.bedrooms} Habs.
+            </span>
+          )}
+          {property.bathrooms != null && (
+            <span className="flex items-center gap-0.5">
+              <span className="material-symbols-outlined text-base">bathtub</span>
+              {property.bathrooms} Baño{property.bathrooms > 1 ? "s" : ""}
+            </span>
+          )}
           <span className="flex items-center gap-0.5">
             <span className="material-symbols-outlined text-base">square</span>
             {property.area}
@@ -215,29 +218,120 @@ function PropertyCard({ property }: { property: Property }) {
 }
 
 export function FeaturesGrid() {
+  const { activeFilter } = useListingFilter();
+  const [inmuebles, setInmuebles] = useState<InmuebleRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    supabase
+      .from("inmuebles")
+      .select("*")
+      .eq("estado", "publicado")
+      .order("created_at", { ascending: false })
+      .limit(5000)
+      .then(({ data, error: err }) => {
+        if (cancelled) return;
+        setLoading(false);
+        if (err) {
+          setError(err.message);
+          return;
+        }
+        setInmuebles((data as InmuebleRow[]) ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const tipoOfertaFilter: "arriendo" | "venta" | null =
+    activeFilter === "rentar"
+      ? "arriendo"
+      : activeFilter === "comprar" || activeFilter === "vender"
+        ? "venta"
+        : null;
+
+  const filtered =
+    tipoOfertaFilter == null
+      ? inmuebles
+      : inmuebles.filter((i) => i.tipo_oferta === tipoOfertaFilter);
+
+  // Orden de ciudades para mostrar (coincide con el check de la tabla)
+  const CIUDAD_ORDER = ["bucaramanga", "giron", "piedecuesta"] as const;
+  const byCity = new Map<string, InmuebleRow[]>();
+  for (const row of filtered) {
+    const c = row.ciudad?.toLowerCase() ?? "";
+    if (!byCity.has(c)) byCity.set(c, []);
+    byCity.get(c)!.push(row);
+  }
+  const citiesWithProps: { ciudad: string; inmuebles: InmuebleRow[] }[] = [];
+  for (const ciudad of CIUDAD_ORDER) {
+    const list = byCity.get(ciudad);
+    if (list?.length) citiesWithProps.push({ ciudad, inmuebles: list.slice(0, 4) });
+  }
+  // Ciudades no contempladas en CIUDAD_ORDER (por si se agregan después)
+  for (const [ciudad, list] of byCity) {
+    if (CIUDAD_ORDER.includes(ciudad as (typeof CIUDAD_ORDER)[number])) continue;
+    if (list.length) citiesWithProps.push({ ciudad, inmuebles: list.slice(0, 4) });
+  }
+
+  if (loading) {
+    return (
+      <section className="mb-10">
+        <h2 className="text-xl font-display font-bold mb-4 text-[var(--text-primary)]">
+          Propiedades
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="aspect-[16/10] rounded-md bg-[var(--background-elevated)] animate-pulse"
+            />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="mb-10">
+        <h2 className="text-xl font-display font-bold mb-4 text-[var(--text-primary)]">
+          Propiedades
+        </h2>
+        <p className="text-[var(--text-secondary)]">Error al cargar: {error}</p>
+      </section>
+    );
+  }
+
   return (
     <section className="mb-10">
-      {/* Bucaramanga */}
       <h2 className="text-xl font-display font-bold mb-4 text-[var(--text-primary)]">
-        Propiedades populares en Bucaramanga
+        Propiedades
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {PROPERTIES_BUCARAMANGA.map((p) => (
-          <PropertyCard key={p.id} property={p} />
-        ))}
-      </div>
-
-      {/* Giron */}
-      <div className="mb-4">
-        <h2 className="text-xl font-display font-bold text-[var(--text-primary)]">
-          Propiedades populares en Giron
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {PROPERTIES_GIRON.map((p) => (
-          <PropertyCard key={p.id} property={p} />
-        ))}
-      </div>
+      {citiesWithProps.length === 0 ? (
+        <p className="text-[var(--text-secondary)]">
+          No hay propiedades publicadas con los filtros seleccionados.
+        </p>
+      ) : (
+        <div className="space-y-10">
+          {citiesWithProps.map(({ ciudad, inmuebles: rows }) => (
+            <div key={ciudad}>
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+                {capitalize(ciudad)}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {rows.map((row) => (
+                  <PropertyCard key={row.id} property={inmuebleToProperty(row)} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

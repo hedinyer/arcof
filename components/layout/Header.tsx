@@ -39,12 +39,24 @@ export function Header() {
       </div>
 
       {showInHeader && (
-        <div className="flex-1 flex justify-center min-w-0 max-w-none mx-auto px-4">
+        <div className="hidden sm:flex flex-1 justify-center min-w-0 max-w-none mx-auto px-4">
           <SearchBarPill compact />
         </div>
       )}
 
-      <div className="flex items-center gap-4 shrink-0">
+      <nav className="hidden lg:flex items-center gap-1 shrink-0">
+        {menuItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-surface)]/80 transition-colors"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="flex items-center gap-4 shrink-0 lg:hidden">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center justify-center p-2 rounded-full border border-[var(--text-secondary)]/30 bg-[var(--background-surface)] hover:shadow-md transition-shadow">

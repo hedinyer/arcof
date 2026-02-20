@@ -29,6 +29,7 @@
   --color-accent-hover: var(--accent-hover);
   --font-sans: var(--font-outfit), system-ui, sans-serif;
   --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-instrument: var(--font-instrument-serif), Georgia, serif;
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
@@ -65,4 +66,19 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-scroll {
+  animation: fadeSlideIn 1s ease-out both;
 }
