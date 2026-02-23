@@ -108,12 +108,6 @@ function PropertyCard({ property }: { property: Property }) {
     [images.length]
   );
 
-  useEffect(() => {
-    if (images.length <= 1) return;
-    const id = setInterval(() => goTo(currentIndex + 1), 4000);
-    return () => clearInterval(id);
-  }, [currentIndex, images.length, goTo]);
-
   const listingLabel =
     property.tipo_oferta === "arriendo"
       ? "En Renta"

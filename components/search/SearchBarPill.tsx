@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useSearchBarForm, useListingFilter, type PropertyType } from "./SearchBarContext";
 import {
   DropdownMenu,
@@ -41,8 +42,19 @@ export function SearchBarPill({
   compact = false,
   "data-search-bar": dataSearchBar = false,
 }: SearchBarPillProps) {
+  const router = useRouter();
   const { location, setLocation, propertyType, setPropertyType } = useSearchBarForm();
   const { activeFilter } = useListingFilter();
+
+  const handleSearch = () => {
+    if (activeFilter === "rentar") {
+      router.push("/propiedades?tipo=arrendar");
+    } else if (activeFilter === "comprar") {
+      router.push("/propiedades?tipo=comprar");
+    } else {
+      router.push("/propiedades");
+    }
+  };
 
   const paddingY = compact ? "py-1.5" : "py-2 sm:py-2.5";
   const paddingX = compact ? "px-3" : "px-3 sm:px-4 md:px-6";
@@ -152,6 +164,7 @@ export function SearchBarPill({
       <div className={`flex items-center pr-2 ${compact ? "py-0.5" : "py-1.5"} shrink-0`}>
         <button
           type="button"
+          onClick={handleSearch}
           className={`bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-full ${buttonSize} flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-[var(--accent)]/25`}
           aria-label="Buscar"
         >
