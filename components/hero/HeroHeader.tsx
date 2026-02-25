@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { SearchBarPill } from "@/components/search/SearchBarPill";
 import { LoginModal } from "@/components/login/LoginModal";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -40,8 +39,8 @@ export function HeroHeader() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-100 w-full bg-transparent transition-colors">
-      <div className="mr-4 ml-4 sm:mr-6 sm:ml-6 pt-3 pb-2 md:pt-4 md:pb-0">
-        <div className="flex items-center justify-between gap-4 rounded-2xl bg-white/75 backdrop-blur-md ring-1 ring-black/10 px-3 py-2 md:bg-transparent md:backdrop-blur-0 md:ring-0 md:px-0 md:py-0">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-3 pb-2 md:pt-4 md:pb-0">
+        <div className="flex items-center justify-between gap-4 rounded-2xl bg-white/75 backdrop-blur-0 ring-1 ring-black/10 px-3 py-2 md:bg-transparent md:ring-0 md:px-0 md:py-0">
         <Link
           href="/"
           className="inline-flex items-center justify-center bg-center w-[100px] h-[40px] rounded md:hidden"
@@ -55,15 +54,11 @@ export function HeroHeader() {
             className="object-contain"
           />
         </Link>
-        <div className="hidden sm:flex md:hidden flex-1 justify-center min-w-0">
-          <SearchBarPill compact />
-        </div>
-
         <nav className="hidden md:flex flex-1 items-center justify-center">
-          <div className="flex items-center gap-1 rounded-full bg-white px-1 py-1 ring-1 ring-gray-300/40 w-full max-w-[95vw] shadow-lg">
+          <div className="flex items-center w-full max-w-5xl mx-auto rounded-full bg-white/90 px-3 py-2 ring-1 ring-gray-300/40 shadow-lg">
             <Link
               href="/"
-              className="inline-flex items-center justify-center bg-center w-[100px] h-[40px] rounded"
+              className="inline-flex items-center justify-center bg-center w-[100px] h-[40px] rounded shrink-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -74,37 +69,36 @@ export function HeroHeader() {
                 className="object-contain"
               />
             </Link>
-            <div className="flex items-center min-w-0 flex-1 max-w-none">
-              <SearchBarPill compact />
-            </div>
-            <div className="flex items-center gap-1 ml-auto shrink-0 mr-2">
+            <div className="flex items-center justify-center gap-1 flex-1 min-w-0">
               <Link
                 href="/"
-                className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-700 font-sans"
+                className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-700 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
               >
                 Inicio
               </Link>
               <Link
                 href="/propiedades?tipo=arrendar"
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
               >
                 Arrendar
               </Link>
               <Link
                 href="/propiedades?tipo=comprar"
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
               >
                 Comprar
               </Link>
               <Link
                 href="/nosotros"
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
               >
                 Nosotros
               </Link>
+            </div>
+            <div className="flex items-center gap-1 shrink-0 mr-2">
               {user && primerNombre ? (
                 <div className="flex items-center gap-2 ml-1">
-                  <span className="px-3 py-2 text-sm font-medium text-gray-900 font-sans">
+                  <span className="px-3 py-2 text-sm font-medium text-gray-900 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]">
                     Hola, {primerNombre}
                   </span>
                   <button
@@ -130,7 +124,7 @@ export function HeroHeader() {
                   </button>
                   <button
                     onClick={handleCerrarSesion}
-                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans"
+                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
                     title="Cerrar sesión"
                   >
                     Salir
@@ -164,7 +158,7 @@ export function HeroHeader() {
         </nav>
 
         <button
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/5 ring-1 ring-black/10 backdrop-blur"
+          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/5 ring-1 ring-black/10"
           id="mobile-menu-button"
           aria-expanded={isMobileMenuOpen}
           aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -214,10 +208,7 @@ export function HeroHeader() {
           isMobileMenuOpen ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 -translate-y-2"
         }`}
       >
-        <div className="rounded-2xl bg-black/80 border border-white/10 p-4 space-y-3 backdrop-blur-md">
-          <div className="flex items-center">
-            <SearchBarPill compact />
-          </div>
+        <div className="rounded-2xl bg-black/80 border border-white/10 p-4 space-y-3">
           <div className="flex flex-col space-y-1 text-sm font-sans">
             <Link
               href="/"

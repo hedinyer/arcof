@@ -54,6 +54,22 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-outfit), system-ui, sans-serif;
+  cursor: inherit;
+}
+
+/* Mantener el cursor de llave en enlaces y botones */
+body a,
+body button {
+  cursor: url("/key1.png"), pointer;
+}
+
+html {
+  cursor: url("/key1.png") 0 0, auto;
+}
+
+/* Hace que la mayoría de elementos usen el cursor de la página */
+* {
+  cursor: inherit;
 }
 
 .material-symbols-outlined {
@@ -81,4 +97,20 @@ body {
 
 .animate-on-scroll {
   animation: fadeSlideIn 1s ease-out both;
+}
+
+@keyframes vinotintoShadowPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(123, 31, 58, 0);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(123, 31, 58, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(123, 31, 58, 0);
+  }
+}
+
+.hero-badge-shadow-vinotinto {
+  animation: fadeSlideIn 1s ease-out both, vinotintoShadowPulse 2.6s ease-in-out 0.4s infinite;
 }

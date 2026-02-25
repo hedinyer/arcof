@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchBarScroll } from "@/components/search/SearchBarContext";
-import { SearchBarPill } from "@/components/search/SearchBarPill";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { showInHeader } = useSearchBarScroll();
-
   const menuItems = [
     { label: "Inicio", href: "/" },
     { label: "Nosotros", href: "/nosotros" },
@@ -37,12 +33,6 @@ export function Header() {
           fetchPriority="high"
         />
       </div>
-
-      {showInHeader && (
-        <div className="hidden sm:flex flex-1 justify-center min-w-0 max-w-none mx-auto px-4">
-          <SearchBarPill compact />
-        </div>
-      )}
 
       <nav className="hidden lg:flex items-center gap-1 shrink-0">
         {menuItems.map((item) => (

@@ -1,6 +1,5 @@
 "use client";
 
-import { SearchBarPill } from "@/components/search/SearchBarPill";
 import { HeroHeader } from "./HeroHeader";
 
 type HeroVariant = "home" | "nosotros" | "propiedades";
@@ -58,7 +57,7 @@ export function Hero({ variant = "home" }: { variant?: HeroVariant }) {
     <>
       <HeroHeader />
       <section
-        className={`w-full isolate overflow-hidden relative bg-background ${
+        className={`w-full isolate overflow-hidden relative bg-background flex ${
           isCompact ? "min-h-[42vh]" : "min-h-screen"
         }`}
         data-element-locator="hero-section"
@@ -75,27 +74,22 @@ export function Hero({ variant = "home" }: { variant?: HeroVariant }) {
             <source src="/1476390_People_Lifestyle_3840x2160.mp4" type="video/mp4" />
           </video>
         </div>
-        {/* Overlay para que el texto resalte sobre el video */}
-        <div
-          className="absolute inset-0 z-5 bg-linear-to-b from-black/55 via-black/45 to-black/65"
-          aria-hidden
-        />
-        <div className="z-10 relative" data-element-locator="hero-content">
+        <div className="z-10 relative flex-1 flex items-end" data-element-locator="hero-content">
           <div
             className={`max-w-7xl mr-auto ml-auto pr-6 pl-6 ${
               isCompact
-                ? "pt-24 pb-8 sm:pt-28 sm:pb-10"
-                : "sm:pt-28 md:pt-32 lg:pt-40 pt-28 pb-16"
+                ? "pb-8 sm:pb-10"
+                : "pb-10 sm:pb-12 md:pb-16"
             }`}
           >
           <div className="mx-auto max-w-3xl text-center">
             <div
-              className={`hidden sm:inline-flex items-center justify-center gap-2 sm:gap-3 rounded-full bg-neutral-100 px-3 py-2.5 sm:px-2.5 sm:py-2 ring-1 ring-neutral-200 animate-on-scroll max-w-full ${
-                isCompact ? "mb-3" : "mb-4 sm:mb-6"
+              className={`hidden sm:inline-flex items-center justify-center gap-2 sm:gap-3 rounded-full bg-neutral-100 px-3 py-2.5 sm:px-2.5 sm:py-2 ring-1 ring-neutral-200 animate-on-scroll hero-badge-shadow-vinotinto max-w-full ${
+              isCompact ? "mb-3" : "mb-4 sm:mb-6"
               }`}
               style={{ animationDelay: "0.1s" }}
             >
-              <span className="inline-flex items-center text-[11px] sm:text-xs font-medium text-neutral-900 bg-white rounded-full py-0.5 px-2 font-sans ring-1 ring-neutral-200 shrink-0">
+              <span className="inline-flex items-center text-[11px] sm:text-xs font-medium text-white bg-[#7b1f3a] rounded-full py-0.5 px-2 font-sans ring-1 ring-neutral-200 shrink-0">
                 {content.badge}
               </span>
               <span className="text-xs sm:text-sm font-medium text-text-primary font-sans text-center sm:text-left max-w-[min(100%,20rem)] sm:max-w-none leading-snug">
@@ -116,28 +110,6 @@ export function Hero({ variant = "home" }: { variant?: HeroVariant }) {
             >
               {content.title}
             </h1>
-            <p
-              className={`animate-on-scroll text-white font-bold max-w-2xl mr-auto ml-auto ${
-                isCompact ? "text-sm sm:text-base mt-3" : "sm:text-lg text-base mt-6"
-              }`}
-              style={{
-                animationDelay: "0.3s",
-                textShadow: "0 1px 4px rgba(0,0,0,0.5), 0 2px 12px rgba(0,0,0,0.4)",
-              }}
-            >
-              {content.paragraph}
-            </p>
-          </div>
-          <div className={`mx-auto max-w-5xl ${isCompact ? "mt-6" : "mt-20"}`}>
-            <p
-              className="animate-on-scroll text-sm text-white font-bold text-center"
-              style={{
-                animationDelay: "0.1s",
-                textShadow: "0 1px 4px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.4)",
-              }}
-            >
-              {content.footer}
-            </p>
           </div>
           </div>
         </div>
