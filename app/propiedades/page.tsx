@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/layout/Footer";
 import { useSearchBarForm, type PropertyType } from "@/components/search/SearchBarContext";
+import { PropertiesMap, type PropertyMapItem } from "@/components/map/PropertiesMap";
 
 const PLACEHOLDER_IMG =
   "https://a0.muscache.com/im/pictures/hosting/Hosting-1417554233548575671/original/a08c902a-28cc-4d19-b994-4e4fe7c602e8.jpeg?im_w=960";
@@ -255,6 +256,7 @@ function PropiedadesContent() {
   const [inmuebles, setInmuebles] = useState<InmuebleRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"lista" | "mapa">("lista");
 
   useEffect(() => {
     let cancelled = false;
@@ -332,6 +334,34 @@ function PropiedadesContent() {
               Comprar
             </Link>
           </div>
+          <div className="flex items-center gap-1 rounded-full bg-white/80 dark:bg-[var(--background-surface)] px-2 py-1 ring-1 ring-gray-300/40 ml-auto sm:ml-2">
+            <button
+              type="button"
+              onClick={() => setViewMode("lista")}
+              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors flex items-center gap-1.5 ${
+                viewMode === "lista"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              }`}
+              aria-pressed={viewMode === "lista"}
+            >
+              <span className="material-symbols-outlined text-lg">grid_view</span>
+              Lista
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("mapa")}
+              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors flex items-center gap-1.5 ${
+                viewMode === "mapa"
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              }`}
+              aria-pressed={viewMode === "mapa"}
+            >
+              <span className="material-symbols-outlined text-lg">map</span>
+              Mapa
+            </button>
+          </div>
         </div>
 
         {hasFilters && (
@@ -379,7 +409,7 @@ function PropiedadesContent() {
           </p>
         )}
 
-        {!loading && !error && inmuebles.length > 0 && (
+        {!loading && !error && inmuebles.length > 0 && viewMode === "lista" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {inmuebles.map((row) => (
               <Link key={row.id} href={`/propiedades/${row.id}`}>
@@ -388,6 +418,60 @@ function PropiedadesContent() {
             ))}
           </div>
         )}
+
+        {!loading && !error && inmuebles.length > 0 && viewMode === "mapa" && (() => {
+          const mapProperties: PropertyMapItem[] = inmuebles
+            .filter((r): r is InmuebleRow & { lat: number; lng: number } => r.lat != null && r.lng != null)
+            .map((r) => {
+              const p = inmuebleToProperty(r);
+              return {
+                id: r.id,
+                lat: r.lat,
+                lng: r.lng,
+                price: p.price,
+                tipo_oferta: r.tipo_oferta,
+                title: p.title,
+                imageUrl: p.images?.[0] ?? null,
+              };
+            });
+          const sinUbicacion = inmuebles.filter((r) => r.lat == null || r.lng == null);
+          return (
+            <div className="space-y-4">
+              <PropertiesMap properties={mapProperties} />
+              {mapProperties.length === 0 && (
+                <p className="text-[var(--text-secondary)] text-sm">
+                  Ninguna propiedad tiene ubicación en mapa. Mostrando solo lista.
+                </p>
+              )}
+              {sinUbicacion.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
+                    Propiedades sin ubicación en mapa ({sinUbicacion.length})
+                  </h2>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {sinUbicacion.map((row) => {
+                      const p = inmuebleToProperty(row);
+                      return (
+                        <li key={row.id}>
+                          <Link
+                            href={`/propiedades/${row.id}`}
+                            className="block p-3 rounded-lg border border-neutral-200/80 bg-[var(--background-elevated)] hover:border-[var(--accent)]/50 transition-colors"
+                          >
+                            <p className="font-medium text-sm text-[var(--text-primary)] truncate">{p.title}</p>
+                            <p className="text-sm font-semibold text-[var(--accent)] mt-0.5">{p.price}</p>
+                            <span className="text-xs text-[var(--text-secondary)]">
+                              {p.tipo_oferta === "arriendo" ? "En renta" : "En venta"}
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </div>
+          );
+        })()}
         </div>
       </main>
       <Footer />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useListingFilter } from "@/components/search/SearchBarContext";
 import { supabase } from "@/lib/supabase";
@@ -8,31 +9,29 @@ import { supabase } from "@/lib/supabase";
 const PLACEHOLDER_IMG =
   "https://a0.muscache.com/im/pictures/hosting/Hosting-1417554233548575671/original/a08c902a-28cc-4d19-b994-4e4fe7c602e8.jpeg?im_w=960";
 
-/** DB row from public.inmuebles */
-type InmuebleRow = {
+/** Columns needed for homepage features grid (slim fetch = faster) */
+const FEATURES_SELECT =
+  "id,created_at,direccion,ciudad,tipo_oferta,tipo_inmueble,area_construida,area_privada,descripcion,fotos,habitaciones,banos,precio";
+
+/** Cached payload for homepage properties (avoids refetch on remount/navigation) */
+let featuresCache: { data: FeaturesInmuebleRow[]; ts: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 1 minute
+
+/** Slim row type for homepage grid only */
+type FeaturesInmuebleRow = {
   id: string;
   created_at: string;
-  updated_at: string;
   direccion: string | null;
   ciudad: string;
-  lat: number | null;
-  lng: number | null;
   tipo_oferta: "venta" | "arriendo";
   tipo_inmueble: string;
   area_construida: number | null;
   area_privada: number | null;
   descripcion: string;
-  video_url: string | null;
   fotos: { url: string; orden?: number }[] | string[];
-  telefono: string | null;
-  user_id: string | null;
-  estado: string;
   habitaciones: number | null;
   banos: number | null;
-  parqueaderos: number | null;
   precio: number | null;
-  estrato: number | null;
-  piso: number | null;
 };
 
 type Property = {
@@ -66,7 +65,7 @@ function formatPrecio(precio: number | null): string {
   return `$${precio.toLocaleString("es-CO")}`;
 }
 
-function inmuebleToProperty(row: InmuebleRow): Property {
+function inmuebleToProperty(row: FeaturesInmuebleRow): Property {
   const rawFotos = Array.isArray(row.fotos) ? row.fotos : [];
   const sorted = [...rawFotos].sort((a, b) => {
     const oA = typeof a === "object" && a && "orden" in a ? (a as { orden?: number }).orden ?? 0 : 0;
@@ -211,22 +210,34 @@ function PropertyCard({ property }: { property: Property }) {
   );
 }
 
+const CIUDAD_ORDER = ["bucaramanga", "giron", "piedecuesta"] as const;
+const FEATURES_LIMIT = 48; // 4 per city × 12 cities max; keeps response small
+
 export function FeaturesGrid() {
   const { activeFilter } = useListingFilter();
-  const [inmuebles, setInmuebles] = useState<InmuebleRow[]>([]);
+  const [inmuebles, setInmuebles] = useState<FeaturesInmuebleRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const now = Date.now();
+    if (featuresCache && now - featuresCache.ts < CACHE_TTL_MS) {
+      setInmuebles(featuresCache.data);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
+
     supabase
       .from("inmuebles")
-      .select("*")
+      .select(FEATURES_SELECT)
       .eq("estado", "publicado")
       .order("created_at", { ascending: false })
-      .limit(5000)
+      .limit(FEATURES_LIMIT)
       .then(({ data, error: err }) => {
         if (cancelled) return;
         setLoading(false);
@@ -234,8 +245,16 @@ export function FeaturesGrid() {
           setError(err.message);
           return;
         }
-        setInmuebles((data as InmuebleRow[]) ?? []);
+        const list = (data ?? []) as FeaturesInmuebleRow[];
+        featuresCache = { data: list, ts: Date.now() };
+        setInmuebles(list);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setLoading(false);
+        setError(e instanceof Error ? e.message : "Error al cargar propiedades");
       });
+
     return () => {
       cancelled = true;
     };
@@ -253,15 +272,16 @@ export function FeaturesGrid() {
       ? inmuebles
       : inmuebles.filter((i) => i.tipo_oferta === tipoOfertaFilter);
 
-  // Orden de ciudades para mostrar (coincide con el check de la tabla)
-  const CIUDAD_ORDER = ["bucaramanga", "giron", "piedecuesta"] as const;
-  const byCity = new Map<string, InmuebleRow[]>();
-  for (const row of filtered) {
+  // Si el filtro no devuelve nada pero sí hay datos, mostrar todos (evita grid vacío)
+  const toShow = filtered.length > 0 ? filtered : inmuebles;
+
+  const byCity = new Map<string, FeaturesInmuebleRow[]>();
+  for (const row of toShow) {
     const c = row.ciudad?.toLowerCase() ?? "";
     if (!byCity.has(c)) byCity.set(c, []);
     byCity.get(c)!.push(row);
   }
-  const citiesWithProps: { ciudad: string; inmuebles: InmuebleRow[] }[] = [];
+  const citiesWithProps: { ciudad: string; inmuebles: FeaturesInmuebleRow[] }[] = [];
   for (const ciudad of CIUDAD_ORDER) {
     const list = byCity.get(ciudad);
     if (list?.length) citiesWithProps.push({ ciudad, inmuebles: list.slice(0, 4) });
@@ -319,7 +339,9 @@ export function FeaturesGrid() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {rows.map((row) => (
-                  <PropertyCard key={row.id} property={inmuebleToProperty(row)} />
+                  <Link key={row.id} href={`/propiedades/${row.id}`}>
+                    <PropertyCard property={inmuebleToProperty(row)} />
+                  </Link>
                 ))}
               </div>
             </div>
