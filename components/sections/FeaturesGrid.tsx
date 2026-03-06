@@ -232,28 +232,32 @@ export function FeaturesGrid() {
     setLoading(true);
     setError(null);
 
-    supabase
-      .from("inmuebles")
-      .select(FEATURES_SELECT)
-      .eq("estado", "publicado")
-      .order("created_at", { ascending: false })
-      .limit(FEATURES_LIMIT)
-      .then(({ data, error: err }) => {
+    (async () => {
+      try {
+        const { data, error: err } = await supabase
+          .from("inmuebles")
+          .select(FEATURES_SELECT)
+          .eq("estado", "publicado")
+          .order("created_at", { ascending: false })
+          .limit(FEATURES_LIMIT);
+
         if (cancelled) return;
         setLoading(false);
+
         if (err) {
           setError(err.message);
           return;
         }
+
         const list = (data ?? []) as FeaturesInmuebleRow[];
         featuresCache = { data: list, ts: Date.now() };
         setInmuebles(list);
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         if (cancelled) return;
         setLoading(false);
         setError(e instanceof Error ? e.message : "Error al cargar propiedades");
-      });
+      }
+    })();
 
     return () => {
       cancelled = true;

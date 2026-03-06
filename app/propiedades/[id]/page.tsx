@@ -107,26 +107,30 @@ export default function PropiedadPage() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    supabase
-      .from("inmuebles")
-      .select("*")
-      .eq("id", id)
-      .eq("estado", "publicado")
-      .single()
-      .then(({ data, error: err }) => {
+    (async () => {
+      try {
+        const { data, error: err } = await supabase
+          .from("inmuebles")
+          .select("*")
+          .eq("id", id)
+          .eq("estado", "publicado")
+          .single();
+
         if (cancelled) return;
         setLoading(false);
+
         if (err) {
           setError(err.code === "PGRST116" ? "Propiedad no encontrada" : err.message);
           return;
         }
+
         setInmueble((data as InmuebleRow) ?? null);
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         if (cancelled) return;
         setLoading(false);
         setError(e instanceof Error ? e.message : "Error al cargar la propiedad");
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
@@ -192,9 +196,9 @@ export default function PropiedadPage() {
         <main className="pt-12 pb-12 px-4 md:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-text-secondary mb-4">{error ?? "Propiedad no encontrada"}</p>
-            <Button asChild variant="outline">
-              <Link href="/propiedades">Ver todas las propiedades</Link>
-            </Button>
+            <Link href="/propiedades" className="inline-block">
+              <Button variant="outline">Ver todas las propiedades</Button>
+            </Link>
           </div>
         </main>
         <Footer />
@@ -376,23 +380,28 @@ export default function PropiedadPage() {
           {/* Actions */}
           <div className="flex flex-wrap justify-center gap-3 pt-6 border-t border-neutral-200/80">
             {whatsappHref ? (
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#722F37] hover:bg-[#5a262d] h-16 md:h-20 px-12 md:px-16 rounded-lg min-w-[260px] md:min-w-[300px] text-white whitespace-nowrap flex-nowrap"
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
               >
-                <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                <Button
+                  size="lg"
+                  className="bg-[#722F37] hover:bg-[#5a262d] h-16 md:h-20 px-12 md:px-16 rounded-lg min-w-[260px] md:min-w-[300px] text-white whitespace-nowrap flex-nowrap"
+                >
                   {rentLabel}
-                </a>
-              </Button>
+                </Button>
+              </a>
             ) : (
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#722F37] hover:bg-[#5a262d] h-16 md:h-20 px-12 md:px-16 rounded-lg min-w-[260px] md:min-w-[300px] text-white whitespace-nowrap flex-nowrap"
-              >
-                <Link href={mensajesHref}>{rentLabel}</Link>
-              </Button>
+              <Link href={mensajesHref} className="inline-block">
+                <Button
+                  size="lg"
+                  className="bg-[#722F37] hover:bg-[#5a262d] h-16 md:h-20 px-12 md:px-16 rounded-lg min-w-[260px] md:min-w-[300px] text-white whitespace-nowrap flex-nowrap"
+                >
+                  {rentLabel}
+                </Button>
+              </Link>
             )}
           </div>
         </div>

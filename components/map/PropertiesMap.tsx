@@ -122,13 +122,14 @@ export function PropertiesMap({ className = "", properties }: PropertiesMapProps
         if (!feature) return;
         const clusterId = feature.properties?.cluster_id as number | undefined;
         const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource & {
-          getClusterExpansionZoom?: (clusterId: number, cb: (err: unknown, zoom: number) => void) => void;
+          getClusterExpansionZoom?: (clusterId: number, cb: (err: unknown, zoom?: number | null) => void) => void;
         };
         const coords = feature.geometry?.type === "Point" ? (feature.geometry.coordinates as number[]) : null;
         if (!clusterId || !coords || typeof source.getClusterExpansionZoom !== "function") return;
 
         source.getClusterExpansionZoom(clusterId, (_err, zoom) => {
-          map.easeTo({ center: coords as [number, number], zoom: Math.min(zoom, 16) });
+          const safeZoom = typeof zoom === "number" ? zoom : DEFAULT_ZOOM;
+          map.easeTo({ center: coords as [number, number], zoom: Math.min(safeZoom, 16) });
         });
       });
 
