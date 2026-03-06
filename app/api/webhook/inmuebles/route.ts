@@ -3,6 +3,39 @@ import { supabase } from "@/lib/supabase";
 
 const MAX_LIMIT = 500;
 
+/** Resuelve path de Storage a URL pública. Si ya es URL completa, la devuelve tal cual. */
+function resolvePhotoUrl(urlOrPath: string): string {
+  if (!urlOrPath || typeof urlOrPath !== "string") return "";
+  if (/^https?:\/\//i.test(urlOrPath)) return urlOrPath;
+  const path = urlOrPath.startsWith("casas/") ? urlOrPath : `casas/${urlOrPath}`;
+  const { data } = supabase.storage.from("images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+/** Normaliza fotos (JSONB) a array de objetos con url completa. Soporta string o array. */
+function normalizeFotos(fotos: unknown): { url: string; orden: number }[] {
+  if (!fotos) return [];
+  let arr: { url?: string; orden?: number }[];
+  if (typeof fotos === "string") {
+    try {
+      arr = JSON.parse(fotos) ?? [];
+    } catch {
+      return [];
+    }
+  } else if (Array.isArray(fotos)) {
+    arr = fotos;
+  } else {
+    return [];
+  }
+  const sorted = [...arr].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+  return sorted
+    .map((f) => {
+      const url = typeof f === "object" && f && "url" in f ? String(f.url ?? "") : "";
+      return { url: resolvePhotoUrl(url), orden: Number(f?.orden ?? 0) };
+    })
+    .filter((f) => f.url);
+}
+
 /**
  * GET /api/webhook/inmuebles
  * Webhook para Kapso (u otros) que devuelve inmuebles publicados desde Supabase.
@@ -61,9 +94,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const raw = (data ?? []) as Record<string, unknown>[];
+    const dataWithMedia = raw.map((row) => {
+      const fotosNorm = normalizeFotos(row.fotos);
+      return {
+        ...row,
+        fotos: fotosNorm,
+        imagenes: fotosNorm.map((f) => f.url),
+        video_url: row.video_url ?? null,
+      };
+    });
+
     return NextResponse.json({
-      data: data ?? [],
-      count: (data ?? []).length,
+      data: dataWithMedia,
+      count: dataWithMedia.length,
     });
   } catch (err) {
     console.error("[webhook/inmuebles] Unexpected error:", err);
