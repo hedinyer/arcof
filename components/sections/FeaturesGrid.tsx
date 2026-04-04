@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useListingFilter } from "@/components/search/SearchBarContext";
 import { supabase } from "@/lib/supabase";
+import { humanizeSupabaseFetchError } from "@/lib/supabaseErrors";
 
 const PLACEHOLDER_IMG =
   "https://a0.muscache.com/im/pictures/hosting/Hosting-1417554233548575671/original/a08c902a-28cc-4d19-b994-4e4fe7c602e8.jpeg?im_w=960";
@@ -245,7 +246,7 @@ export function FeaturesGrid() {
         setLoading(false);
 
         if (err) {
-          setError(err.message);
+          setError(humanizeSupabaseFetchError(err.message));
           return;
         }
 

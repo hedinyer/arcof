@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { humanizeSupabaseFetchError } from "@/lib/supabaseErrors";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/layout/Footer";
 import { useSearchBarForm, type PropertyType } from "@/components/search/SearchBarContext";
@@ -283,7 +284,7 @@ function PropiedadesContent() {
       if (cancelled) return;
       setLoading(false);
       if (err) {
-        setError(err.message);
+        setError(humanizeSupabaseFetchError(err.message));
         return;
       }
       setInmuebles((data as InmuebleRow[]) ?? []);

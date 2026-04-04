@@ -22,7 +22,7 @@ export function SearchBar() {
   return (
     <>
       <div className="flex flex-col items-center justify-center mt-4 mb-4 sm:mt-8 sm:mb-8 pointer-events-none">
-        <div className="pointer-events-auto flex items-center justify-center gap-6 sm:gap-4 md:gap-8 mb-4 sm:mb-6 bg-transparent px-3 py-2 sm:px-6 sm:py-3 md:px-8 rounded-full flex-wrap">
+        <div className="pointer-events-auto flex items-center justify-center gap-8 sm:gap-6 md:gap-10 lg:gap-12 mb-5 sm:mb-7 bg-transparent px-4 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 rounded-full flex-wrap">
           {filters.map((f) => (
             <button
               key={f.id}
@@ -36,7 +36,7 @@ export function SearchBar() {
                   setShowPaymentModal(true);
                 }
               }}
-              className={`flex items-center gap-1.5 sm:gap-2 md:gap-3 group transition-colors ${
+              className={`flex items-center gap-2 sm:gap-3 md:gap-4 group transition-colors ${
                 activeFilter === f.id
                   ? "text-[var(--accent)]"
                   : "text-[var(--text-primary)] hover:text-[var(--accent)]"
@@ -47,13 +47,13 @@ export function SearchBar() {
                 alt=""
                 className={`object-contain shrink-0 ${
                   f.id === "vender"
-                    ? "h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32"
-                    : "h-10 w-10 sm:h-14 sm:w-14 md:h-20 md:w-20"
+                    ? "h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40 lg:w-40"
+                    : "h-14 w-14 sm:h-[4.5rem] sm:w-[4.5rem] md:h-24 md:w-24 lg:h-28 lg:w-28"
                 }`}
-                width={f.id === "vender" ? 128 : 80}
-                height={f.id === "vender" ? 128 : 80}
+                width={f.id === "vender" ? 160 : 112}
+                height={f.id === "vender" ? 160 : 112}
               />
-              <span className="text-xs sm:text-sm md:text-base font-bold whitespace-nowrap">
+              <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold whitespace-nowrap">
                 {f.label}
               </span>
             </button>

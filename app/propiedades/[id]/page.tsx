@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { humanizeSupabaseFetchError } from "@/lib/supabaseErrors";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -120,7 +121,11 @@ export default function PropiedadPage() {
         setLoading(false);
 
         if (err) {
-          setError(err.code === "PGRST116" ? "Propiedad no encontrada" : err.message);
+          setError(
+            err.code === "PGRST116"
+              ? "Propiedad no encontrada"
+              : humanizeSupabaseFetchError(err.message)
+          );
           return;
         }
 

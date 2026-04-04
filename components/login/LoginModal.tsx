@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
+import { humanizeSupabaseFetchError } from "@/lib/supabaseErrors";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -55,7 +56,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         }, 1000);
       }
     } catch (err: any) {
-      setError(err.message || "Error al iniciar sesión. Verifica tus credenciales.");
+      setError(
+        humanizeSupabaseFetchError(err?.message || "") ||
+          "Error al iniciar sesión. Verifica tus credenciales."
+      );
     } finally {
       setCargando(false);
     }
@@ -154,7 +158,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     } catch (err: any) {
       console.error("Error en registro:", err);
       setError(
-        err.message || "Error al crear la cuenta. Intenta nuevamente."
+        humanizeSupabaseFetchError(err?.message || "") ||
+          "Error al crear la cuenta. Intenta nuevamente."
       );
     } finally {
       setCargando(false);
