@@ -55,9 +55,9 @@ function resolvePhotoUrl(urlOrPath: string): string {
 
 function formatPrecio(precio: number | null): string {
   if (precio == null || precio <= 0) return "Consultar";
-  if (precio >= 1_000_000) return `$${(precio / 1_000_000).toFixed(1)} M`;
-  if (precio >= 1_000) return `$${(precio / 1_000).toFixed(0)} K`;
-  return `$${precio.toLocaleString("es-CO")}`;
+  // Mostrar el valor completo (sin abreviar) con separadores de miles.
+  // Ej: 2500000 -> $2,500,000
+  return `$${Math.round(precio).toLocaleString("en-US")}`;
 }
 
 function getImages(row: InmuebleRow): string[] {

@@ -15,7 +15,7 @@ const serviceCards = [
     title: "Administración",
     description: "Solo te preocupas por administrar los buenos momentos de tu vida.",
     buttonText: "Contactar ahora",
-    href: "/contacto",
+    href: "/administracion",
     icon: "groups",
     imageSrc: "/young-business-people-office-working-with-tablet.jpg",
   },

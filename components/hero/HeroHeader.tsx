@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LoginModal } from "@/components/login/LoginModal";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 export function HeroHeader() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, usuario, signOut } = useAuth();
   const router = useRouter();
@@ -18,11 +16,8 @@ export function HeroHeader() {
     : null;
 
   const handlePublicarClick = () => {
-    if (user) {
-      router.push("/publicar");
-    } else {
-      setIsLoginModalOpen(true);
-    }
+    setIsMobileMenuOpen(false);
+    router.push("/publicar");
   };
 
   const handleCerrarSesion = async () => {
@@ -94,6 +89,36 @@ export function HeroHeader() {
               >
                 Nosotros
               </Link>
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 font-sans inline-flex items-center gap-1 [text-shadow:0_0_1px_rgba(255,255,255,.9),0_0_2px_rgba(255,255,255,.5)]"
+                  aria-haspopup="menu"
+                >
+                  Servicios
+                  <span className="material-symbols-outlined text-base">expand_more</span>
+                </button>
+                <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 transition-all duration-150 absolute top-full left-0 mt-2 w-52 rounded-xl bg-white ring-1 ring-black/10 shadow-lg p-1.5 z-50">
+                  <Link
+                    href="/administracion"
+                    className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    Administración
+                  </Link>
+                  <Link
+                    href="/avaluos"
+                    className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    Avalúos
+                  </Link>
+                  <Link
+                    href="/tarifas"
+                    className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    Nuestras tarifas
+                  </Link>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-1 shrink-0 mr-2">
               {user && primerNombre ? (
@@ -238,6 +263,32 @@ export function HeroHeader() {
             >
               Nosotros
             </Link>
+            <div className="pt-1">
+              <p className="py-2 text-white/70 text-xs uppercase tracking-[0.18em]">Servicios</p>
+              <div className="pl-3 border-l border-white/10 flex flex-col">
+                <Link
+                  href="/administracion"
+                  className="py-2 text-white/80 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Administración
+                </Link>
+                <Link
+                  href="/avaluos"
+                  className="py-2 text-white/80 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Avalúos
+                </Link>
+                <Link
+                  href="/tarifas"
+                  className="py-2 text-white/80 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Nuestras tarifas
+                </Link>
+              </div>
+            </div>
           </div>
           <div className="pt-2 border-t border-white/10 mt-2 space-y-2">
             {user && primerNombre ? (
@@ -269,7 +320,6 @@ export function HeroHeader() {
           </div>
         </div>
       </div>
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </header>
     </>
   );

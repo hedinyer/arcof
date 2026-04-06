@@ -22,7 +22,7 @@ export function SearchBar() {
   return (
     <>
       <div className="flex flex-col items-center justify-center mt-4 mb-4 sm:mt-8 sm:mb-8 pointer-events-none">
-        <div className="pointer-events-auto flex items-center justify-center gap-8 sm:gap-6 md:gap-10 lg:gap-12 mb-5 sm:mb-7 bg-transparent px-4 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 rounded-full flex-wrap">
+        <div className="pointer-events-auto flex items-center justify-center gap-8 sm:gap-6 md:gap-10 lg:gap-12 mt-[-76px] mb-5 sm:mb-7 bg-transparent px-4 py-0 sm:px-8 sm:py-0 md:px-10 md:py-0 rounded-full flex-wrap">
           {filters.map((f) => (
             <button
               key={f.id}

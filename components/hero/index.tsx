@@ -97,13 +97,13 @@ export function Hero({ variant = "home" }: { variant?: HeroVariant }) {
               </span>
             </div>
             <h1
-              className={`leading-tight text-white tracking-tight font-bold animate-on-scroll ${
+              className={`leading-[50px] text-white tracking-[2.1px] font-bold animate-on-scroll ${
                 isCompact
                   ? "text-2xl sm:text-3xl md:text-4xl"
-                  : "sm:text-5xl md:text-6xl lg:text-7xl text-4xl"
+                  : "sm:text-5xl md:text-6xl lg:text-[50px] text-4xl"
               }`}
               style={{
-                fontFamily: "var(--font-instrument-serif), Georgia, serif",
+                fontFamily: '"Instrument Serif"',
                 animationDelay: "0.2s",
                 textShadow: "0 2px 8px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.35)",
               }}
